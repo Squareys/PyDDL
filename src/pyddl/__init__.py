@@ -33,6 +33,12 @@ class DdlStructure:
     """
 
     def __init__(self, identifier, name=None, structures=[]):
+        """
+        Constructor
+        :param identifier: structure identifier
+        :param name: optional name
+        :param structures: list of substructures
+        """
         self.structures = structures
         self.properties = dict()
         self.identifier = identifier
@@ -87,7 +93,15 @@ class DdlDocument:
         self.structures = []
 
     def add_structure(self, identifier, name, structures):
+        """
+        Add a substructure
+        :param identifier: structure identifier
+        :param name: optional name
+        :param structures: list of substructures
+        :return: self (for method chaining)
+        """
         self.structures.append(DdlStructure(identifier, name, structures))
+        return self
 
 
 class DdlWriter:
@@ -96,6 +110,10 @@ class DdlWriter:
     """
 
     def __init__(self, document):
+        """
+        Constructor
+        :param document: document to write
+        """
         self.doc = document
 
     def get_document(self):
@@ -108,7 +126,7 @@ class DdlWriter:
     def write(self, filename):
         """
         Write the writers document to a specified file.
-        :param file: file to write to
+        :param filename: path to a file to write to
         :return: nothing
         """
         pass
@@ -120,6 +138,11 @@ class DdlTextWriter(DdlWriter):
     """
 
     def __init__(self, document, rounding=6):
+        """
+        Constructor
+        :param document: document to write
+        :param rounding: number of decimal places to keep or None to keep all
+        """
         DdlWriter.__init__(self, document)
 
         self.file = None
@@ -173,6 +196,11 @@ class DdlTextWriter(DdlWriter):
         self.file.close()
 
     def property_as_text(self, prop):
+        """
+        Create a text representation for a key-value-pair. E.g.: "key = value".
+        :param prop: a pair to represent as text
+        :return: a byte-string in the form "key = value"
+        """
         value = prop[1]
         if isinstance(value, int):
             value_bytes = self.to_int_byte(value)
@@ -186,6 +214,12 @@ class DdlTextWriter(DdlWriter):
         return prop[0] + B" = " + value_bytes
 
     def primitive_as_text(self, primitive, no_indent=False):
+        """
+        Get a text representation of the given primitive structure
+        :param primitive: primitive structure to get the text representation for
+        :param no_indent: if true will skip adding the first indent
+        :return: a byte string representing the primitive structure
+        """
         text = (B"" if no_indent else self.indent) + bytes(primitive.data_type.name, "UTF-8") + B" "
 
         if primitive.name is not None:
@@ -193,14 +227,18 @@ class DdlTextWriter(DdlWriter):
 
         # find appropriate conversion function
         if primitive.data_type in [PrimitiveType.bool]:
+            # bool
             to_bytes = self.to_bool_byte
         elif primitive.data_type in [PrimitiveType.double, PrimitiveType.float]:
+            # float/double
             to_bytes = self.to_float_byte if self.rounding is None else self.to_float_byte_rounded
         elif primitive.data_type in [PrimitiveType.int8, PrimitiveType.int16, PrimitiveType.int32, PrimitiveType.int64,
                                      PrimitiveType.unsigned_int8, PrimitiveType.unsigned_int16,
                                      PrimitiveType.unsigned_int32, PrimitiveType.unsigned_int64, PrimitiveType.half]:
+            # integer types
             to_bytes = self.to_int_byte
         elif primitive.data_type in [PrimitiveType.string]:
+            # string
             to_bytes = self.to_string_byte
         elif primitive.data_type in [PrimitiveType.ref]:
             # TODO: References not implemented yet!
@@ -231,6 +269,11 @@ class DdlTextWriter(DdlWriter):
         return text
 
     def structure_as_text(self, structure):
+        """
+        Get a text representation of the given structure
+        :param structure: structure to get the text representation for
+        :return: a byte string representing the structure
+        """
         text = self.indent + structure.identifier + B" "
 
         if structure.name:
