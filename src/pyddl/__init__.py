@@ -36,7 +36,7 @@ class DdlStructure:
         self.structures = structures
         self.properties = dict()
         self.identifier = identifier
-        self.name = name
+        self.name = name if name != "" else None
 
     def is_simple_structure(self):
         """
