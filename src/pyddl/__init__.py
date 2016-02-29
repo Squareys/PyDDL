@@ -61,6 +61,9 @@ class DdlDocument:
     def __init__(self):
         self.structures = []
 
+    def add_structure(self, identifier, name, structures):
+        self.structures.append(DdlStructure(identifier, name, structures))
+
 
 class DdlWriter:
     """
