@@ -3,6 +3,28 @@ from abc import abstractmethod
 __author__ = "Jonathan Hale"
 
 
+class DdlPrimitive:
+    """
+    An OpenDDL primitive structure.
+    """
+
+    def __init__(self, data_type, data, name=None, vector_size=0):
+        """
+        Constructor
+        :param data_type: primitive data type (see pyddl.enum.PrimitiveType)
+        :param data: list of values. If vector_size != 0, the list should contain tuples
+        :param name: name of the primitive structure
+        :param vector_size: size of the contained vectors
+        """
+        self.data_type = data_type
+        self.name = name
+        self.vector_size = vector_size
+        self.data = data
+
+    def is_simple_primitive(self):
+        return len(self.data) == 1 and self.vector_size <= 4
+
+
 class DdlStructure:
     """
     An OpenDDL structure.
