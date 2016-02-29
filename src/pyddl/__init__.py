@@ -54,6 +54,29 @@ class DdlStructure:
 
         return self.structures[0].is_simple_primitive()
 
+    def add_structure(self, identifier, name=None, structures=[]):
+        """
+        Add a substructure
+        :param identifier: structure identifier
+        :param name: optional name
+        :param structures: list of substructures
+        :return: self (for method chaining)
+        """
+        self.structures.append(DdlStructure(identifier, name, structures))
+        return self
+
+    def add_primitive(self, data_type, data, name=None, vector_size=0):
+        """
+        Add a primitive substructure
+        :param data_type: primitive data type (see pyddl.enum.PrimitiveType)
+        :param data: list of values. If vector_size != 0, the list should contain tuples
+        :param name: name of the primitive structure
+        :param vector_size: size of the contained vectors
+        :return: self (for method chaining)
+        """
+        self.structures.append(DdlPrimitive(data_type, data, name, vector_size))
+        return self
+
 
 class DdlDocument:
     """
