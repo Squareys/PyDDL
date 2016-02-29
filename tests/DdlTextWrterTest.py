@@ -35,6 +35,14 @@ class DdlTextWriterTest(unittest.TestCase):
                                [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
                                 DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])]
                                )
+        document.add_structure(B"SomethingElse", None,
+                               [DdlStructure(B"AnArray", None, [DdlPrimitive(PrimitiveType.int32, range(1, 100))])]
+                               )
+        document.add_structure(B"MoreElse", None,
+                               [DdlStructure(B"AnVectorArray", None,
+                                             [DdlPrimitive(PrimitiveType.int32,
+                                                           [(1, 2), (12, 42), (13, 31)], None, 2)])]
+                               )
 
         # write document
         DdlTextWriter(document).write("test.oddl")
