@@ -220,7 +220,12 @@ class DdlTextWriter(DdlWriter):
         :param no_indent: if true will skip adding the first indent
         :return: a byte string representing the primitive structure
         """
-        text = (B"" if no_indent else self.indent) + bytes(primitive.data_type.name, "UTF-8") + B" "
+        text = (B"" if no_indent else self.indent) + bytes(primitive.data_type.name, "UTF-8")
+
+        if primitive.vector_size > 0:
+            text += B"[" + self.to_int_byte(primitive.vector_size) + B"]"
+
+        text += B" "
 
         if primitive.name is not None:
             text += primitive.name + B" "
@@ -258,7 +263,7 @@ class DdlTextWriter(DdlWriter):
             self.inc_indent()
 
             if primitive.vector_size == 0:
-                text += self.indent + (B", ".join(primitive.data)) + B"}\n"
+                text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
             else:
                 text += self.indent + B"{" + (B"}, {".join(B",".join(map(to_bytes, vec)) for vec in primitive.data)) \
                         + B"}\n"
