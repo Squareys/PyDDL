@@ -1,7 +1,7 @@
-import io
 import os
 import unittest
 from pyddl import *
+from pyddl.enum import *
 
 __author__ = "Jonathan Hale"
 
@@ -28,8 +28,16 @@ class DdlTextWriterTest(unittest.TestCase):
             self.fail("DdlTextWriter did not create the specified file.")
 
     def test_full(self):
-        self.assertTrue(True)
-        pass
+        # create document
+        document = DdlDocument()
+
+        document.add_structure(B"Human", None,
+                               [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
+                                DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])]
+                               )
+
+        # write document
+        DdlTextWriter(document).write("test.oddl")
 
 if __name__ == "__main__":
     unittest.main()
