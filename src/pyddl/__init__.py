@@ -265,7 +265,7 @@ class DdlTextWriter(DdlWriter):
             if primitive.vector_size == 0:
                 text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
             else:
-                text += self.indent + B"{" + (B"}, {".join(B",".join(map(to_bytes, vec)) for vec in primitive.data)) \
+                text += self.indent + B"{" + (B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in primitive.data)) \
                         + B"}\n"
 
             self.dec_indent()
