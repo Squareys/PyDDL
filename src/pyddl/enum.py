@@ -6,18 +6,18 @@ class PrimitiveType(Enum):
     Enum for primitive structures.
     """
 
-    bool = None  # auto assigned 0
-    int8 = None  # auto assigned 1
-    int16 = None  # ...
-    int32 = None
-    int64 = None
-    unsigned_int8 = None
-    unsigned_int16 = None
-    unsigned_int32 = None
-    unsigned_int64 = None
-    half = None
-    float = None
-    double = None
-    string = None
-    ref = None
-    type = None
+    bool = 0  # auto assigned 0
+    int8 = 1  # auto assigned 1
+    int16 = 2  # ...
+    int32 = 3
+    int64 = 4
+    unsigned_int8 = 5
+    unsigned_int16 = 6
+    unsigned_int32 = 7
+    unsigned_int64 = 8
+    half = 9
+    float = 10
+    double = 11
+    string = 12
+    ref = 13
+    type = 14
