@@ -195,7 +195,7 @@ class DdlTextWriter(DdlWriter):
         if primitive.data_type in [PrimitiveType.bool]:
             to_bytes = self.to_bool_byte
         elif primitive.data_type in [PrimitiveType.double, PrimitiveType.float]:
-            to_bytes = self.to_float_byte  # TODO: handle rounding
+            to_bytes = self.to_float_byte if self.rounding is None else self.to_float_byte_rounded
         elif primitive.data_type in [PrimitiveType.int8, PrimitiveType.int16, PrimitiveType.int32, PrimitiveType.int64,
                                      PrimitiveType.unsigned_int8, PrimitiveType.unsigned_int16,
                                      PrimitiveType.unsigned_int32, PrimitiveType.unsigned_int64, PrimitiveType.half]:
