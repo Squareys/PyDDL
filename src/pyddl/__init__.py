@@ -30,10 +30,27 @@ class DdlStructure:
     An OpenDDL structure.
     """
 
-    def __init__(self, name):
-        self.structures = []
+    def __init__(self, identifier, name=None, structures=[]):
+        self.structures = structures
         self.properties = dict()
+        self.identifier = identifier
         self.name = name
+
+    def is_simple_structure(self):
+        """
+        A structure is simple if it contains exactly one primitive and has no properties or name.
+        :return: true if this structure is simple
+        """
+        if len(self.structures) != 1:
+            return False
+        if len(self.properties) != 0:
+            return False
+        if self.name is not None:
+            return False
+        if not isinstance(self.structures[0], DdlPrimitive):
+            return False
+
+        return self.structures[0].is_simple_primitive()
 
 
 class DdlDocument:
