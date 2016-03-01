@@ -35,8 +35,12 @@ class DdlTextWriterTest(unittest.TestCase):
                                [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
                                 DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])]
                                )
+
+        prim = DdlPrimitive(PrimitiveType.int32, range(1, 100))
+        DdlTextWriter.set_max_elements_per_line(prim, 10)
+
         document.add_structure(B"SomethingElse", None,
-                               [DdlStructure(B"AnArray", None, [DdlPrimitive(PrimitiveType.int32, range(1, 100))])]
+                               [DdlStructure(B"AnArray", None, [prim])]
                                )
         document.add_structure(B"MoreElse", None,
                                [DdlStructure(B"AnVectorArray", None,
