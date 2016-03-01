@@ -263,8 +263,16 @@ class DdlTextWriter(DdlWriter):
             self.inc_indent()
 
             if primitive.vector_size == 0:
-                text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
+                if hasattr(primitive, 'max_elements_per_line'):
+                    n = primitive.max_elements_per_line
+                    data = primitive.data
+                    text += self.indent + ((B",\n" + self.indent).join(
+                        [B", ".join(group) for group in
+                         [map(to_bytes, data[i:i + n]) for i in range(0, len(data), n)]])) + B"\n"
+                else:
+                    text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
             else:
+                # TODO: Handle max_elements_per_line
                 text += self.indent + B"{" + (B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in primitive.data)) \
                         + B"}\n"
 
@@ -303,6 +311,17 @@ class DdlTextWriter(DdlWriter):
             text += self.indent + B"}\n"
 
         return text
+
+    @staticmethod
+    def set_max_elements_per_line(primitive, elements):
+        """
+        Set how many elements should be displayed per line for a primitive structure.
+        :param primitive: the primitive
+        :param elements: max amount of elements per line
+        """
+        if isinstance(primitive, DdlPrimitive):
+            primitive.max_elements_per_line = elements
+
 
 # Space reserved for a specification based OpenDdlBinaryWriter ;)
 # Hope there will be some specification for it some day.
