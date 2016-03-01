@@ -66,10 +66,11 @@ class DdlStructure:
         :param identifier: structure identifier
         :param name: optional name
         :param structures: list of substructures
-        :return: self (for method chaining)
+        :return: the created structure
         """
-        self.structures.append(DdlStructure(identifier, name, structures))
-        return self
+        s = DdlStructure(identifier, name, structures)
+        self.structures.append(s)
+        return s
 
     def add_primitive(self, data_type, data, name=None, vector_size=0):
         """
@@ -98,10 +99,11 @@ class DdlDocument:
         :param identifier: structure identifier
         :param name: optional name
         :param structures: list of substructures
-        :return: self (for method chaining)
+        :return: the created structure
         """
-        self.structures.append(DdlStructure(identifier, name, structures))
-        return self
+        s = DdlStructure(identifier, name, structures)
+        self.structures.append(s)
+        return s
 
 
 class DdlWriter:
