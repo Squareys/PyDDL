@@ -201,6 +201,10 @@ class DdlTextWriter(DdlWriter):
     def to_bool_byte(b):
         return B"true" if b else B"false"
 
+    @staticmethod
+    def to_ref_byte(structure):
+        return B"$" + structure.name
+
     def inc_indent(self):
         """
         Increase the current line indent.
@@ -254,7 +258,7 @@ class DdlTextWriter(DdlWriter):
         text += B" "
 
         if primitive.name is not None:
-            text += primitive.name + B" "
+            text += B" $" + primitive.name + B" "
 
         # find appropriate conversion function
         if primitive.data_type in [PrimitiveType.bool]:
@@ -272,8 +276,7 @@ class DdlTextWriter(DdlWriter):
             # string
             to_bytes = self.to_string_byte
         elif primitive.data_type in [PrimitiveType.ref]:
-            # TODO: References not implemented yet!
-            to_bytes = None
+            to_bytes = self.to_ref_byte
         else:
             raise TypeError("Encountered unknown primitive type.")
 
