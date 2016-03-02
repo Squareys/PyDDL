@@ -2,6 +2,7 @@ import os
 import unittest
 from collections import OrderedDict
 
+from pyddl import DdlPrimitiveDataType as DataType
 from pyddl import *
 
 __author__ = "Jonathan Hale"
@@ -54,20 +55,21 @@ class DdlTextWriterTest(unittest.TestCase):
 
         human_struct = document.add_structure(
                                 B"Human", B"human1",
-                                [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
-                                 DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])],
-                                OrderedDict([(B"Weird", True), (B"Funny", 12)]))
+                                [DdlStructure(B"Name", children=[DdlPrimitive(DataType.string, ["Peter"])]),
+                                 DdlStructure(B"Age",
+                                              children=[DdlPrimitive(DataType.unsigned_int16, [21])])],
+                                props=OrderedDict([(B"Weird", True), (B"Funny", 12)]))
 
-        human_struct.add_structure(B"Self", None, [DdlPrimitive(PrimitiveType.ref, [human_struct])])
+        human_struct.add_structure(B"Self", children=[DdlPrimitive(DataType.ref, [human_struct])])
 
-        prim = DdlPrimitive(PrimitiveType.int32, range(1, 100))
+        prim = DdlPrimitive(DataType.int32, range(1, 100))
         DdlTextWriter.set_max_elements_per_line(prim, 10)
 
-        vects = DdlPrimitive(PrimitiveType.int32, [(x, x*2) for x in range(1, 100)], None, 2)
+        vects = DdlPrimitive(DataType.int32, [(x, x * 2) for x in range(1, 100)], None, 2)
         DdlTextWriter.set_max_elements_per_line(vects, 5)
 
-        document.add_structure(B"SomethingElse", None, [DdlStructure(B"AnArray", None, [prim])])
-        document.add_structure(B"MoreElse", None, [DdlStructure(B"AnVectorArray", None, [vects])])
+        document.add_structure(B"SomethingElse", children=[DdlStructure(B"AnArray", children=[prim])])
+        document.add_structure(B"MoreElse", children=[DdlStructure(B"AnVectorArray", children=[vects])])
 
         # write document
         DdlTextWriter(document).write("test.ddl")
