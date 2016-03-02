@@ -54,7 +54,7 @@ class DdlStructure:
     An OpenDDL structure.
     """
 
-    def __init__(self, identifier, name=None, structures=[]):
+    def __init__(self, identifier, name=None, structures=[], props=dict()):
         """
         Constructor
         :param identifier: structure identifier
@@ -62,7 +62,7 @@ class DdlStructure:
         :param structures: list of substructures
         """
         self.structures = structures
-        self.properties = dict()
+        self.properties = props
         self.identifier = identifier
         self.name = name if name != "" else None
 
@@ -82,15 +82,16 @@ class DdlStructure:
 
         return self.structures[0].is_simple_primitive()
 
-    def add_structure(self, identifier, name=None, structures=[]):
+    def add_structure(self, identifier, name, structures, props=dict()):
         """
         Add a substructure
         :param identifier: structure identifier
         :param name: optional name
         :param structures: list of substructures
+        :param props: dict of properties
         :return: the created structure
         """
-        s = DdlStructure(identifier, name, structures)
+        s = DdlStructure(identifier, name, structures, props)
         self.structures.append(s)
         return s
 
@@ -115,15 +116,16 @@ class DdlDocument:
     def __init__(self):
         self.structures = []
 
-    def add_structure(self, identifier, name, structures):
+    def add_structure(self, identifier, name, structures, props=dict()):
         """
         Add a substructure
         :param identifier: structure identifier
         :param name: optional name
         :param structures: list of substructures
+        :param props: dict of properties
         :return: the created structure
         """
-        s = DdlStructure(identifier, name, structures)
+        s = DdlStructure(identifier, name, structures, props)
         self.structures.append(s)
         return s
 
