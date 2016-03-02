@@ -54,14 +54,14 @@ class DdlStructure:
     An OpenDDL structure.
     """
 
-    def __init__(self, identifier, name=None, structures=[], props=dict()):
+    def __init__(self, identifier, name=None, children=[], props=dict()):
         """
         Constructor
         :param identifier: structure identifier
         :param name: optional name
-        :param structures: list of substructures
+        :param children: list of substructures
         """
-        self.structures = structures
+        self.children = children
         self.properties = props
         self.identifier = identifier
         self.name = name if name != "" else None
@@ -71,7 +71,7 @@ class DdlStructure:
         A structure is simple if it contains exactly one primitive and has no properties or name.
         :return: true if this structure is simple
         """
-        if len(self.structures) != 1:
+        if len(self.children) != 1:
             # a simple structure may contain only one primitive substructure
             return False
         if len(self.properties) != 0:
@@ -80,23 +80,23 @@ class DdlStructure:
         if self.name is not None:
             # simple children don't have a name
             return False
-        if not isinstance(self.structures[0], DdlPrimitive):
+        if not isinstance(self.children[0], DdlPrimitive):
             # the only substructure needs to be a primitive
             return False
 
-        return self.structures[0].is_simple_primitive()
+        return self.children[0].is_simple_primitive()
 
-    def add_structure(self, identifier, name, structures, props=dict()):
+    def add_structure(self, identifier, name, children, props=dict()):
         """
         Add a substructure
         :param identifier: structure identifier
         :param name: optional name
-        :param structures: list of substructures
+        :param children: list of substructures or primitives
         :param props: dict of properties
         :return: the created structure
         """
-        s = DdlStructure(identifier, name, structures, props)
-        self.structures.append(s)
+        s = DdlStructure(identifier, name, children, props)
+        self.children.append(s)
         return s
 
     def add_primitive(self, data_type, data, name=None, vector_size=0):
@@ -108,7 +108,7 @@ class DdlStructure:
         :param vector_size: size of the contained vectors
         :return: self (for method chaining)
         """
-        self.structures.append(DdlPrimitive(data_type, data, name, vector_size))
+        self.children.append(DdlPrimitive(data_type, data, name, vector_size))
         return self
 
 
@@ -120,16 +120,16 @@ class DdlDocument:
     def __init__(self):
         self.structures = []
 
-    def add_structure(self, identifier, name, structures, props=dict()):
+    def add_structure(self, identifier, name=None, children=[], props=dict()):
         """
         Add a substructure
         :param identifier: structure identifier
         :param name: optional name
-        :param structures: list of substructures
+        :param children: list of substructures and primitives
         :param props: dict of properties
         :return: the created structure
         """
-        s = DdlStructure(identifier, name, structures, props)
+        s = DdlStructure(identifier, name, children, props)
         self.structures.append(s)
         return s
 
@@ -335,12 +335,12 @@ class DdlTextWriter(DdlWriter):
             text += B" (" + B", ".join(self.property_as_text(prop) for prop in structure.properties.items()) + B")"
 
         if structure.is_simple_structure():
-            text += B" {" + self.primitive_as_text(structure.structures[0], True) + B"}\n"
+            text += B" {" + self.primitive_as_text(structure.children[0], True) + B"}\n"
         else:
             text += B"\n" + self.indent + B"{\n"
 
             self.inc_indent()
-            for sub in structure.structures:
+            for sub in structure.children:
                 if isinstance(sub, DdlPrimitive):
                     text += self.primitive_as_text(sub)
                 else:
