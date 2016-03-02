@@ -10,10 +10,9 @@ class PrimitiveType(Enum):
     """
     Enum for primitive structure data types.
     """
-
-    bool = 0  # auto assigned 0
-    int8 = 1  # auto assigned 1
-    int16 = 2  # ...
+    bool = 0
+    int8 = 1
+    int16 = 2
     int32 = 3
     int64 = 4
     unsigned_int8 = 5
@@ -73,12 +72,16 @@ class DdlStructure:
         :return: true if this structure is simple
         """
         if len(self.structures) != 1:
+            # a simple structure may contain only one primitive substructure
             return False
         if len(self.properties) != 0:
+            # a simple structure does not have properties
             return False
         if self.name is not None:
+            # simple children don't have a name
             return False
         if not isinstance(self.structures[0], DdlPrimitive):
+            # the only substructure needs to be a primitive
             return False
 
         return self.structures[0].is_simple_primitive()
