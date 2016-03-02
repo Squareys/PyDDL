@@ -1,7 +1,7 @@
 import os
 import unittest
+
 from pyddl import *
-from pyddl.enum import *
 
 __author__ = "Jonathan Hale"
 
