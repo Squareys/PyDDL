@@ -360,6 +360,8 @@ class DdlTextWriter(DdlWriter):
         """
         if isinstance(primitive, DdlPrimitive):
             primitive.max_elements_per_line = elements
+        else:
+            raise TypeError("max_elements_per_line can only be set for DdlPrimitive")
 
 
 # Space reserved for a specification based OpenDdlBinaryWriter ;)
