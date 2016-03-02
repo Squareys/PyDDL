@@ -1,7 +1,8 @@
-Human 
+Human $human1 (Weird = true, Funny = 12)
 {
 	Name {string {Peter}}
 	Age {unsigned_int16 {21}}
+	Self {ref {$human1}}
 }
 SomethingElse
 {

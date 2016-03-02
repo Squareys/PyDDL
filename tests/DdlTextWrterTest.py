@@ -1,5 +1,6 @@
 import os
 import unittest
+from collections import OrderedDict
 
 from pyddl import *
 
@@ -51,10 +52,13 @@ class DdlTextWriterTest(unittest.TestCase):
         # create document
         document = DdlDocument()
 
-        document.add_structure(B"Human", None,
-                               [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
-                                DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])]
-                               )
+        human_struct = document.add_structure(
+                                B"Human", B"human1",
+                                [DdlStructure(B"Name", None, [DdlPrimitive(PrimitiveType.string, ["Peter"])]),
+                                 DdlStructure(B"Age", None, [DdlPrimitive(PrimitiveType.unsigned_int16, [21])])],
+                                OrderedDict([(B"Weird", True), (B"Funny", 12)]))
+
+        human_struct.add_structure(B"Self", None, [DdlPrimitive(PrimitiveType.ref, [human_struct])])
 
         prim = DdlPrimitive(PrimitiveType.int32, range(1, 100))
         DdlTextWriter.set_max_elements_per_line(prim, 10)
