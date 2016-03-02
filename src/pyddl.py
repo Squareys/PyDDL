@@ -3,6 +3,7 @@ import math
 from enum import Enum
 
 __author__ = "Jonathan Hale"
+__version__ = "0.1.0"
 
 
 class PrimitiveType(Enum):
