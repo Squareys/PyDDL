@@ -6,9 +6,12 @@ __author__ = "Jonathan Hale"
 __version__ = "0.1.0"
 
 
-class PrimitiveType(Enum):
+class DdlPrimitiveDataType(Enum):
     """
     Enum for primitive structure data types.
+
+    For convenience use `import DdlPrimitiveDataType from pyddl as DataType`
+    for example.
     """
     bool = 0
     int8 = 1
@@ -265,21 +268,21 @@ class DdlTextWriter(DdlWriter):
             text += B" $" + primitive.name + B" "
 
         # find appropriate conversion function
-        if primitive.data_type in [PrimitiveType.bool]:
+        if primitive.data_type in [DdlPrimitiveDataType.bool]:
             # bool
             to_bytes = self.to_bool_byte
-        elif primitive.data_type in [PrimitiveType.double, PrimitiveType.float]:
+        elif primitive.data_type in [DdlPrimitiveDataType.double, DdlPrimitiveDataType.float]:
             # float/double
             to_bytes = self.to_float_byte if self.rounding is None else self.to_float_byte_rounded
-        elif primitive.data_type in [PrimitiveType.int8, PrimitiveType.int16, PrimitiveType.int32, PrimitiveType.int64,
-                                     PrimitiveType.unsigned_int8, PrimitiveType.unsigned_int16,
-                                     PrimitiveType.unsigned_int32, PrimitiveType.unsigned_int64, PrimitiveType.half]:
+        elif primitive.data_type in [DdlPrimitiveDataType.int8, DdlPrimitiveDataType.int16, DdlPrimitiveDataType.int32, DdlPrimitiveDataType.int64,
+                                     DdlPrimitiveDataType.unsigned_int8, DdlPrimitiveDataType.unsigned_int16,
+                                     DdlPrimitiveDataType.unsigned_int32, DdlPrimitiveDataType.unsigned_int64, DdlPrimitiveDataType.half]:
             # integer types
             to_bytes = self.to_int_byte
-        elif primitive.data_type in [PrimitiveType.string]:
+        elif primitive.data_type in [DdlPrimitiveDataType.string]:
             # string
             to_bytes = self.to_string_byte
-        elif primitive.data_type in [PrimitiveType.ref]:
+        elif primitive.data_type in [DdlPrimitiveDataType.ref]:
             to_bytes = self.to_ref_byte
         else:
             raise TypeError("Encountered unknown primitive type.")
