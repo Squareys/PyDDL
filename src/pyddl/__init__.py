@@ -274,9 +274,15 @@ class DdlTextWriter(DdlWriter):
                 else:
                     text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
             else:
-                # TODO: Handle max_elements_per_line
-                text += self.indent + B"{" + (B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in primitive.data)) \
-                        + B"}\n"
+                if hasattr(primitive, 'max_elements_per_line'):
+                    n = primitive.max_elements_per_line
+                    data = primitive.data
+                    text += self.indent + B"{" + ((B"},\n" + self.indent + B"{").join(
+                        [B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in group) for group in
+                         [data[i:i + n] for i in range(0, len(data), n)]])) + B"}\n"
+                else:
+                    text += self.indent + B"{" + (B"}, {".join(
+                        B", ".join(map(to_bytes, vec)) for vec in primitive.data)) + B"}\n"
 
             self.dec_indent()
             text += self.indent + B"}\n"
