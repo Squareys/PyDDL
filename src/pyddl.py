@@ -232,7 +232,9 @@ class DdlTextWriter(DdlWriter):
         :return: a byte-string in the form "key = value"
         """
         value = prop[1]
-        if isinstance(value, int):
+        if isinstance(value, bool):
+            value_bytes = self.to_bool_byte(value)
+        elif isinstance(value, int):
             value_bytes = self.to_int_byte(value)
         elif isinstance(value, float):
             value_bytes = self.to_float_byte(value)
