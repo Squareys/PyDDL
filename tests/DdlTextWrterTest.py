@@ -10,7 +10,7 @@ class DdlTextWriterTest(unittest.TestCase):
 
     def tearDown(self):
         try:
-            os.remove("test.oddl")
+            os.remove("test.ddl")
         except FileNotFoundError:
             pass  # test_empty failed?
 
@@ -19,11 +19,11 @@ class DdlTextWriterTest(unittest.TestCase):
         document = DdlDocument()
 
         # write document
-        DdlTextWriter(document).write("test.oddl")
+        DdlTextWriter(document).write("test.ddl")
 
         # check if file was created
         try:
-            self.assertTrue(os.path.isfile("test.oddl"))
+            self.assertTrue(os.path.isfile("test.ddl"))
         except FileNotFoundError:
             self.fail("DdlTextWriter did not create the specified file.")
 
@@ -49,7 +49,7 @@ class DdlTextWriterTest(unittest.TestCase):
                                )
 
         # write document
-        DdlTextWriter(document).write("test.oddl")
+        DdlTextWriter(document).write("test.ddl")
 
 if __name__ == "__main__":
     unittest.main()
