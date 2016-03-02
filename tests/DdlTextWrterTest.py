@@ -8,6 +8,26 @@ __author__ = "Jonathan Hale"
 
 class DdlTextWriterTest(unittest.TestCase):
 
+    def readContents(self, filename):
+        """
+        Open, read the contents and then close a file.
+        :param filename: name of the file to read the contents of
+        :return: Contents of the file with given filename
+        """
+        file = open(filename)
+        contents = file.read()
+        file.close()
+
+        return contents
+
+    def assertFilesEqual(self, test_filename, expected_filename):
+        """
+        Check whether the contents of two files are equal
+        :param test_filename: name of the file to test
+        :param expected_filename: name of the file containing expected content
+        """
+        self.assertEqual(self.readContents(test_filename), self.readContents(expected_filename))
+
     def tearDown(self):
         try:
             os.remove("test.ddl")
@@ -47,6 +67,8 @@ class DdlTextWriterTest(unittest.TestCase):
 
         # write document
         DdlTextWriter(document).write("test.ddl")
+
+        self.assertFilesEqual("test.ddl", "expected.ddl")
 
 if __name__ == "__main__":
     unittest.main()
