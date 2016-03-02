@@ -39,14 +39,11 @@ class DdlTextWriterTest(unittest.TestCase):
         prim = DdlPrimitive(PrimitiveType.int32, range(1, 100))
         DdlTextWriter.set_max_elements_per_line(prim, 10)
 
-        document.add_structure(B"SomethingElse", None,
-                               [DdlStructure(B"AnArray", None, [prim])]
-                               )
-        document.add_structure(B"MoreElse", None,
-                               [DdlStructure(B"AnVectorArray", None,
-                                             [DdlPrimitive(PrimitiveType.int32,
-                                                           [(1, 2), (12, 42), (13, 31)], None, 2)])]
-                               )
+        vects = DdlPrimitive(PrimitiveType.int32, [(x, x*2) for x in range(1, 100)], None, 2)
+        DdlTextWriter.set_max_elements_per_line(vects, 5)
+
+        document.add_structure(B"SomethingElse", None, [DdlStructure(B"AnArray", None, [prim])])
+        document.add_structure(B"MoreElse", None, [DdlStructure(B"AnVectorArray", None, [vects])])
 
         # write document
         DdlTextWriter(document).write("test.ddl")
