@@ -89,7 +89,7 @@ class DdlStructure:
 
         return self.children[0].is_simple_primitive()
 
-    def add_structure(self, identifier, name, children, props=dict()):
+    def add_structure(self, identifier, name=None, children=[], props=dict()):
         """
         Add a substructure
         :param identifier: structure identifier
@@ -102,7 +102,7 @@ class DdlStructure:
         self.children.append(s)
         return s
 
-    def add_primitive(self, data_type, data, name=None, vector_size=0):
+    def add_primitive(self, data_type, data=[], name=None, vector_size=0):
         """
         Add a primitive substructure
         :param data_type: primitive data type (see pyddl.enum.PrimitiveType)
