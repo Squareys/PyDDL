@@ -62,12 +62,15 @@ class DdlTextWriterTest(unittest.TestCase):
 
         human_struct.add_structure(B"Self", children=[DdlPrimitive(DataType.ref, [human_struct])])
 
+        # a primitive array
         prim = DdlPrimitive(DataType.int32, range(1, 100))
         DdlTextWriter.set_max_elements_per_line(prim, 10)
 
+        # a array of vectors of primitives
         vects = DdlPrimitive(DataType.int32, [(x, x * 2) for x in range(1, 100)], None, 2)
         DdlTextWriter.set_max_elements_per_line(vects, 5)
 
+        # add the above primitives to the document, wrapped by another structure
         document.add_structure(B"SomethingElse", children=[DdlStructure(B"AnArray", children=[prim])])
         document.add_structure(B"MoreElse", children=[DdlStructure(B"AnVectorArray", children=[vects])])
 
