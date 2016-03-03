@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    modules.rst
+   pyddl.rst
 
 Indices and tables
 ==================
