@@ -11,25 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: pyddl
-
-.. autoclass:: DdlPrimitiveDataType
-    :members:
-
-.. autoclass:: DdlPrimitive
-   :members:
-
-.. autoclass:: DdlStructure
-   :members:
-
-.. autoclass:: DdlDocument
-   :members:
-
-.. autoclass:: DdlWriter
-   :members:
-
-.. autoclass:: DdlTextWriter
-   :members:
+   modules.rst
 
 Indices and tables
 ==================
