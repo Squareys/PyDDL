@@ -68,6 +68,7 @@ class DdlStructure:
         self.properties = props
         self.identifier = identifier
         self.name = name if name != "" else None
+        self.name_is_global = True
 
     def is_simple_structure(self):
         """
@@ -210,7 +211,7 @@ class DdlTextWriter(DdlWriter):
 
     @staticmethod
     def to_ref_byte(structure):
-        return B"$" + structure.name
+        return (B"$" if structure.name_is_global else B"%") + structure.name
 
     def inc_indent(self):
         """
@@ -332,7 +333,8 @@ class DdlTextWriter(DdlWriter):
         text = self.indent + structure.identifier
 
         if structure.name:
-            text += B" $" + structure.name
+            text += B" $" if structure.name_is_global else B" %"
+            text += structure.name
 
         if len(structure.properties) != 0:
             text += B" (" + B", ".join(self.property_as_text(prop) for prop in structure.properties.items()) + B")"
