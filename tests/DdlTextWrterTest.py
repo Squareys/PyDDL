@@ -60,10 +60,11 @@ class DdlTextWriterTest(unittest.TestCase):
                                               children=[DdlPrimitive(DataType.unsigned_int16, [21])])],
                                 props=OrderedDict([(B"Weird", True), (B"Funny", 12)]))
 
+        DdlTextWriter.set_comment(human_struct, B"not an alien")
         human_struct.add_structure(B"Self", children=[DdlPrimitive(DataType.ref, [human_struct])])
 
         # a primitive array
-        prim = DdlPrimitive(DataType.int32, range(1, 100))
+        prim = DdlTextWriter.set_comment(DdlPrimitive(DataType.int32, range(1, 100)), B"100")
         DdlTextWriter.set_max_elements_per_line(prim, 10)
 
         # a array of vectors of primitives
