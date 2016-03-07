@@ -248,6 +248,8 @@ class DdlTextWriter(DdlWriter):
             value_bytes = self.to_float_byte(value)
         elif isinstance(value, str):
             value_bytes = B"\"" + bytes(value, "UTF-8") + B"\""
+        elif isinstance(value, bytes):
+            value_bytes = B"\"" + value + B"\""
         else:
             raise TypeError("ERROR: Unknown property type for property \"{}\"".format(prop[0]))
 
