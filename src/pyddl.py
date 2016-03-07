@@ -368,6 +368,20 @@ class DdlTextWriter(DdlWriter):
         else:
             raise TypeError("max_elements_per_line can only be set for DdlPrimitive")
 
+    @staticmethod
+    def set_comment(structure, comment):
+        """
+        Set a one-line comment to a structure or primitive structure
+        :param structure: the structure to add the one-line comment to
+        :param comment: the comment to add
+        :return: the provided structure with an added `comment` attribute
+        """
+        if isinstance(structure, DdlStructure) or isinstance(structure, DdlPrimitive):
+            structure.comment = comment
+            return structure
+        else:
+            raise TypeError("set_comment can only be set for DdlPrimitive or DdlStructure")
+
 
 # Space reserved for a specification based OpenDdlBinaryWriter ;)
 # Hope there will be some specification for it some day.
