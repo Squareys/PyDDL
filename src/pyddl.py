@@ -372,9 +372,11 @@ class DdlTextWriter(DdlWriter):
         Set how many elements should be displayed per line for a primitive structure.
         :param primitive: the primitive
         :param elements: max amount of elements per line
+        :return: the provided primitive with an added `max_elements_per_line` attribute
         """
         if isinstance(primitive, DdlPrimitive):
             primitive.max_elements_per_line = elements
+            return primitive
         else:
             raise TypeError("max_elements_per_line can only be set for DdlPrimitive")
 
