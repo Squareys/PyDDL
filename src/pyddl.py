@@ -268,6 +268,10 @@ class DdlTextWriter(DdlWriter):
         if primitive.name is not None:
             text += B" $" + primitive.name + B" "
 
+        has_comment = hasattr(primitive, 'comment')
+        if has_comment:
+            text += B"\t\t\t// " + primitive.comment
+
         # find appropriate conversion function
         if primitive.data_type in [DdlPrimitiveDataType.bool]:
             # bool
@@ -289,12 +293,14 @@ class DdlTextWriter(DdlWriter):
             raise TypeError("Encountered unknown primitive type.")
 
         if len(primitive.data) == 0:
-            text += B" { }"
+            text += B"\n" if has_comment else B" "
+            text += B"{ }"
         elif len(primitive.data) == 1:
+            text += B"\n" if has_comment else B" "
             if primitive.vector_size == 0:
-                text += B" {" + to_bytes(primitive.data[0]) + B"}"
+                text += B"{" + to_bytes(primitive.data[0]) + B"}"
             else:
-                text += B" { {" + (B", ".join(map(to_bytes, primitive.data[0]))) + B"} }"
+                text += B"{ {" + (B", ".join(map(to_bytes, primitive.data[0]))) + B"} }"
         else:
             text += B"\n" + self.indent + B"{\n"
             self.inc_indent()
@@ -339,7 +345,11 @@ class DdlTextWriter(DdlWriter):
         if len(structure.properties) != 0:
             text += B" (" + B", ".join(self.property_as_text(prop) for prop in structure.properties.items()) + B")"
 
-        if structure.is_simple_structure():
+        has_comment = hasattr(structure, 'comment')
+        if has_comment:
+            text += B"\t\t\t// " + structure.comment
+
+        if structure.is_simple_structure() and not has_comment:
             text += B" {" + self.primitive_as_text(structure.children[0], True) + B"}\n"
         else:
             text += B"\n" + self.indent + B"{\n"
