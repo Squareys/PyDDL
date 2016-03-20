@@ -427,7 +427,11 @@ class DdlTextWriter(DdlWriter):
         :return: the provided structure with an added `comment` attribute
         """
         if isinstance(structure, DdlStructure) or isinstance(structure, DdlPrimitive):
-            structure.comment = comment
+
+            if isinstance(comment, bytes):
+                structure.comment = comment
+            else:
+                structure.comment = bytes(str(comment), "UTF-8")
             return structure
         else:
             raise TypeError("set_comment can only be set for DdlPrimitive or DdlStructure")
