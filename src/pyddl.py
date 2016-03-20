@@ -203,7 +203,7 @@ class DdlTextWriter(DdlWriter):
 
     @staticmethod
     def to_string_byte(s):
-        return bytes(s, "UTF-8")
+        return B"\"" + bytes(s, "UTF-8") + B"\""
 
     @staticmethod
     def to_bool_byte(b):
