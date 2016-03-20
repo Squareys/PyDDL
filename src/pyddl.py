@@ -78,8 +78,8 @@ class DdlStructure:
         if len(self.children) != 1:
             # a simple structure may contain only one primitive substructure
             return False
-        if len(self.properties) != 0:
-            # a simple structure does not have properties
+        if len(self.properties) > 1:
+            # a simple structure does not have more than one property
             return False
         if self.name is not None:
             # simple children don't have a name
