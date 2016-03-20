@@ -299,7 +299,11 @@ class DdlTextWriter(DdlWriter):
             to_bytes = self.to_int_byte
         elif primitive.data_type in [DdlPrimitiveDataType.string]:
             # string
-            to_bytes = self.to_string_byte
+            if primitive.vector_size == 0 and len(primitive.data) > 0:
+                to_bytes = id if isinstance(primitive.data[0], bytes) else self.to_string_byte
+            else:
+                if len(primitive.data) > 0:
+                    to_bytes = id if isinstance(primitive.data[0][0], bytes) else self.to_string_byte
         elif primitive.data_type in [DdlPrimitiveDataType.ref]:
             to_bytes = self.to_ref_byte
         else:
