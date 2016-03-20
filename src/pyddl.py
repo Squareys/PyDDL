@@ -213,6 +213,10 @@ class DdlTextWriter(DdlWriter):
     def to_ref_byte(structure):
         return (B"$" if structure.name_is_global else B"%") + structure.name
 
+    @staticmethod
+    def id(val):
+        return val
+
     def inc_indent(self):
         """
         Increase the current line indent.
@@ -300,10 +304,10 @@ class DdlTextWriter(DdlWriter):
         elif primitive.data_type in [DdlPrimitiveDataType.string]:
             # string
             if primitive.vector_size == 0 and len(primitive.data) > 0:
-                to_bytes = id if isinstance(primitive.data[0], bytes) else self.to_string_byte
+                to_bytes = self.id if isinstance(primitive.data[0], bytes) else self.to_string_byte
             else:
                 if len(primitive.data) > 0:
-                    to_bytes = id if isinstance(primitive.data[0][0], bytes) else self.to_string_byte
+                    to_bytes = self.id if isinstance(primitive.data[0][0], bytes) else self.to_string_byte
         elif primitive.data_type in [DdlPrimitiveDataType.ref]:
             to_bytes = self.to_ref_byte
         else:
