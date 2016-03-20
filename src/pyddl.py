@@ -228,8 +228,18 @@ class DdlTextWriter(DdlWriter):
     def write(self, filename):
         self.file = open(filename, "wb")
 
-        for structure in self.get_document().structures:
+        if len(self.get_document().structures) != 0:
+            # first element will never prepend a empty line
+            structure = self.get_document().structures[0]
             self.file.write(self.structure_as_text(structure))
+            previous_was_simple = structure.is_simple_structure()
+
+            for structure in self.get_document().structures[1:]:
+                if not (previous_was_simple and structure.is_simple_structure()):
+                    self.file.write(B"\n")
+                    previous_was_simple = structure.is_simple_structure()
+
+                self.file.write(self.structure_as_text(structure))
 
         self.file.close()
 
@@ -262,17 +272,17 @@ class DdlTextWriter(DdlWriter):
         :param no_indent: if true will skip adding the first indent
         :return: a byte string representing the primitive structure
         """
-        text = (B"" if no_indent else self.indent) + bytes(primitive.data_type.name, "UTF-8")
+        lines = [(B"" if no_indent else self.indent) + bytes(primitive.data_type.name, "UTF-8")]
 
         if primitive.vector_size > 0:
-            text += B"[" + self.to_int_byte(primitive.vector_size) + B"]"
+            lines.append(B"[" + self.to_int_byte(primitive.vector_size) + B"]")
 
         if primitive.name is not None:
-            text += B" $" + primitive.name + B" "
+            lines.append(B" $" + primitive.name + B" ")
 
         has_comment = hasattr(primitive, 'comment')
         if has_comment:
-            text += B"\t\t\t// " + primitive.comment
+            lines.append(B"\t\t// " + primitive.comment)
 
         # find appropriate conversion function
         if primitive.data_type in [DdlPrimitiveDataType.bool]:
@@ -295,42 +305,52 @@ class DdlTextWriter(DdlWriter):
             raise TypeError("Encountered unknown primitive type.")
 
         if len(primitive.data) == 0:
-            text += B"\n" if has_comment else B" "
-            text += B"{ }"
-        elif len(primitive.data) == 1:
-            text += B"\n" if has_comment else B" "
+            lines.append(B"\n" if has_comment else B" ")
+            lines.append(B"{ }")
+        elif primitive.is_simple_primitive():
+            lines.append(B"\n" if has_comment else B" ")
             if primitive.vector_size == 0:
-                text += B"{" + to_bytes(primitive.data[0]) + B"}"
+                lines.append(B"{" + to_bytes(primitive.data[0]) + B"}")
             else:
-                text += B"{ {" + (B", ".join(map(to_bytes, primitive.data[0]))) + B"} }"
+                lines.append(B"{{" + (B", ".join(map(to_bytes, primitive.data[0]))) + B"}}")
         else:
-            text += B"\n" + self.indent + B"{\n"
+            lines.append(B"\n" + self.indent + B"{\n")
             self.inc_indent()
 
             if primitive.vector_size == 0:
                 if hasattr(primitive, 'max_elements_per_line'):
                     n = primitive.max_elements_per_line
                     data = primitive.data
-                    text += self.indent + ((B",\n" + self.indent).join(
+                    lines.append(self.indent + ((B",\n" + self.indent).join(
                         [B", ".join(group) for group in
-                         [map(to_bytes, data[i:i + n]) for i in range(0, len(data), n)]])) + B"\n"
+                         [map(to_bytes, data[i:i + n]) for i in range(0, len(data), n)]])) + B"\n")
                 else:
-                    text += self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n"
+                    lines.append(self.indent + (B", ".join(map(to_bytes, primitive.data))) + B"\n")
             else:
                 if hasattr(primitive, 'max_elements_per_line'):
                     n = primitive.max_elements_per_line
                     data = primitive.data
-                    text += self.indent + B"{" + ((B"},\n" + self.indent + B"{").join(
-                        [B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in group) for group in
-                         [data[i:i + n] for i in range(0, len(data), n)]])) + B"}\n"
+
+                    if len(data) == 1:
+                        data = data[0]
+                        # there is exactly one vector, we will handle its components for formatting with
+                        # max_elements_per_line.
+                        lines.append(self.indent + B"{" + ((B",\n" + self.indent + B" ").join(
+                            [(B", ".join(map(to_bytes, line))) for line in
+                             [data[i:i + n] for i in range(0, len(data), n)]  # group generator
+                             ]) + B"}\n"))
+                    else:
+                        lines.append(self.indent + B"{" + ((B"},\n" + self.indent + B"{").join(
+                            [(B"}, {".join(B", ".join(map(to_bytes, vec)) for vec in group)) for group in
+                             [data[i:i + n] for i in range(0, len(data), n)]])) + B"}\n")
                 else:
-                    text += self.indent + B"{" + (B"}, {".join(
-                        B", ".join(map(to_bytes, vec)) for vec in primitive.data)) + B"}\n"
+                    lines.append(self.indent + B"{" + (B"}, {".join(
+                        B", ".join(map(to_bytes, vec)) for vec in primitive.data)) + B"}\n")
 
             self.dec_indent()
-            text += self.indent + B"}\n"
+            lines.append(self.indent + B"}")
 
-        return text
+        return lines
 
     def structure_as_text(self, structure):
         """
@@ -338,40 +358,55 @@ class DdlTextWriter(DdlWriter):
         :param structure: structure to get the text representation for
         :return: a byte string representing the structure
         """
-        text = self.indent + structure.identifier
+        lines = [self.indent + structure.identifier]
 
         if structure.name:
-            text += B" $" if structure.name_is_global else B" %"
-            text += structure.name
+            lines.append(B" $" if structure.name_is_global else B" %")
+            lines.append(structure.name)
 
         if len(structure.properties) != 0:
-            text += B" (" + B", ".join(self.property_as_text(prop) for prop in structure.properties.items()) + B")"
+            lines.append(B" (" + B", ".join(self.property_as_text(prop) for prop in structure.properties.items()) + B")")
 
         has_comment = hasattr(structure, 'comment')
         if has_comment:
-            text += B"\t\t\t// " + structure.comment
+            lines.append(B"\t\t// " + structure.comment)
 
         if structure.is_simple_structure() and not has_comment:
-            text += B" {" + self.primitive_as_text(structure.children[0], True) + B"}\n"
+            lines.append(B" {")
+            lines.extend(self.primitive_as_text(structure.children[0], True))
+            lines.append(B"}\n")
         else:
-            text += B"\n" + self.indent + B"{\n"
+            lines.append(B"\n" + self.indent + B"{\n")
+
+            previous_was_simple = False
+            first = structure.children[0]
 
             self.inc_indent()
             for sub in structure.children:
                 if isinstance(sub, DdlPrimitive):
-                    text += self.primitive_as_text(sub)
+                    lines.extend(self.primitive_as_text(sub))
+                    lines.append(B"\n")
+                    previous_was_simple = False
                 else:
-                    text += self.structure_as_text(sub)
+                    if not (previous_was_simple and sub.is_simple_structure()) and not sub == first:
+                        lines.append(B"\n")
+
+                    lines.append(self.structure_as_text(sub))
+                    previous_was_simple = sub.is_simple_structure()
+
             self.dec_indent()
 
-            text += self.indent + B"}\n"
+            lines.append(self.indent + B"}\n")
 
-        return text
+        return B''.join(lines)
 
     @staticmethod
     def set_max_elements_per_line(primitive, elements):
         """
         Set how many elements should be displayed per line for a primitive structure.
+        When there is more than one element, every vector is handled as one element.
+        If there is merely one element in the primitive data and this element is a vector,
+        the components of the vector are treated as the elements.
         :param primitive: the primitive
         :param elements: max amount of elements per line
         :return: the provided primitive with an added `max_elements_per_line` attribute
