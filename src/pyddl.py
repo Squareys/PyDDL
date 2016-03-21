@@ -211,6 +211,8 @@ class DdlTextWriter(DdlWriter):
 
     @staticmethod
     def to_ref_byte(structure):
+        if structure is None:
+            return B"null"
         return (B"$" if structure.name_is_global else B"%") + structure.name
 
     @staticmethod
