@@ -183,12 +183,11 @@ class DdlTextWriter(DdlWriter):
         self.indent = B""
         self.rounding = rounding
 
-    @staticmethod
-    def to_float_byte_rounded(f):
+    def to_float_byte_rounded(self, f):
         if (math.isinf(f)) or (math.isnan(f)):
             return B"0.0"
         else:
-            return bytes(str(round(f, 6)), "UTF-8")
+            return bytes(str(round(f, self.rounding)), "UTF-8")
 
     @staticmethod
     def to_float_byte(f):
