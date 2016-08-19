@@ -1,14 +1,15 @@
-Human $human1 (Weird = true, Funny = 12)			// not an alien
+Human $human1 (Weird = true, Funny = 12)		// not an alien
 {
-	Name {string {Peter}}
+	Name {string {"Peter"}}
 	Age {unsigned_int16 {21}}
 	Self {ref {$human1}}
 }
+
 SomethingElse
 {
 	AnArray
 	{
-		int32			// 100
+		int32		// 100
 		{
 			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 			11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -23,6 +24,7 @@ SomethingElse
 		}
 	}
 }
+
 MoreElse
 {
 	AnVectorArray
