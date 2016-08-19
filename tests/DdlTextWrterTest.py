@@ -33,6 +33,7 @@ class DdlTextWriterTest(unittest.TestCase):
     def tearDown(self):
         try:
             os.remove("test.ddl")
+            os.remove("test_compressed.ddl")
         except FileNotFoundError:
             pass  # test_empty failed?
 
@@ -49,10 +50,22 @@ class DdlTextWriterTest(unittest.TestCase):
         except FileNotFoundError:
             self.fail("DdlTextWriter did not create the specified file.")
 
-    def test_full(self):
+    def test_empty_compressed(self):
         # create document
         document = DdlDocument()
 
+        # write document
+        DdlCompressedTextWriter(document).write("test_compressed.ddl")
+
+        # check if file was created
+        try:
+            self.assertTrue(os.path.isfile("test_compressed.ddl"))
+        except FileNotFoundError:
+            self.fail("DdlCompressedTextWriter did not create the specified file.")
+
+    @staticmethod
+    def create_document():
+        document = DdlDocument()
         human_struct = document.add_structure(
                                 B"Human", B"human1",
                                 [DdlStructure(B"Name", children=[DdlPrimitive(DataType.string, ["Peter"])]),
@@ -75,10 +88,25 @@ class DdlTextWriterTest(unittest.TestCase):
         document.add_structure(B"SomethingElse", children=[DdlStructure(B"AnArray", children=[prim])])
         document.add_structure(B"MoreElse", children=[DdlStructure(B"AnVectorArray", children=[vects])])
 
+        return document
+
+    def test_full(self):
+        # create document
+        document = self.create_document()
+
         # write document
         DdlTextWriter(document).write("test.ddl")
 
         self.assertFilesEqual("test.ddl", "expected.ddl")
+
+    def test_full_compressed(self):
+        # create document
+        document = self.create_document()
+
+        # write document
+        DdlCompressedTextWriter(document).write("test_compressed.ddl")
+
+        self.assertFilesEqual("test_compressed.ddl", "expected_compressed.ddl")
 
 if __name__ == "__main__":
     unittest.main()
