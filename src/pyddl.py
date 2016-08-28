@@ -265,6 +265,8 @@ class DdlTextWriter(DdlWriter):
             value_bytes = self.to_int_byte(value)
         elif isinstance(value, float):
             value_bytes = self.to_float_byte(value)
+        elif isinstance(value, DdlStructure):
+            value_bytes = self.to_ref_byte(value)
         elif isinstance(value, str):
             value_bytes = B"\"" + bytes(value, "UTF-8") + B"\""
         elif isinstance(value, bytes):
